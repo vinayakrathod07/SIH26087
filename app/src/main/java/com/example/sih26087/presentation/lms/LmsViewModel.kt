@@ -3,7 +3,7 @@ package com.example.sih26087.presentation.lms
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.sih26087.data.local.CourseMetadataEntity
-import com.example.sih26087.data.repository.DashboardRepository
+import com.example.sih26087.data.repository.LmsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,19 +13,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LmsViewModel @Inject constructor(
-    private val repository: DashboardRepository
+    private val repository: LmsRepository
 ) : ViewModel() {
 
-    val courses: StateFlow<List<CourseMetadataEntity>> = repository.getEnrolledCourses()
+    val courses: StateFlow<List<CourseMetadataEntity>> = repository.getCourses()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
-        viewModelScope.launch {
-            repository.refreshCourses()
-        }
+        // No auto-refresh for now to avoid overwriting user progress if implemented
     }
     
-    fun startLesson(courseId: String) {
-        // Logic to navigate to lesson or update progress
+    fun refreshCourses() {
+        viewModelScope.launch {
+            // repository.refreshCourses() // If implemented in LmsRepository
+        }
     }
 }

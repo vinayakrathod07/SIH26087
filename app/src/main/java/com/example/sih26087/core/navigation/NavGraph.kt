@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.sih26087.data.model.UserRole
 import com.example.sih26087.presentation.ai.AiMentorScreen
+import com.example.sih26087.presentation.ai.VoiceAssistantScreen
 import com.example.sih26087.presentation.attendance.AttendanceViewModel
 import com.example.sih26087.presentation.attendance.QrScannerScreen
 import com.example.sih26087.presentation.auth.*
@@ -54,10 +55,9 @@ fun SetupNavGraph(
         }
 
         composable(Screen.Login.route) {
-            val viewModel: AuthViewModel = hiltViewModel()
             LoginScreen(
                 onLoginSuccess = { role ->
-                    viewModel.login("demo@coop.gov.in", role) {
+                    authViewModel.login("demo@coop.gov.in", role) {
                         navController.navigate(Screen.TraineeDashboard.route) {
                             popUpTo(Screen.Login.route) { inclusive = true }
                         }
@@ -194,6 +194,14 @@ fun SetupNavGraph(
             NotificationsScreen(onBack = { navController.popBackStack() })
         }
 
+        composable(Screen.VoiceAssistant.route) {
+            VoiceAssistantScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.AiCareerMentor.route) {
+            AiMentorScreen(onBack = { navController.popBackStack() })
+        }
+
         composable(
             route = Screen.AssessmentView.route,
             arguments = listOf(
@@ -208,10 +216,6 @@ fun SetupNavGraph(
                 assessmentId = assessmentId,
                 onBack = { navController.popBackStack() }
             )
-        }
-
-        composable("ai_career_mentor") {
-            AiMentorScreen(onBack = { navController.popBackStack() })
         }
     }
 }

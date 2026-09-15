@@ -23,6 +23,8 @@ sealed class Screen(val route: String) {
     object SyncHub : Screen("sync_hub")
     object CertificationHub : Screen("certification_hub")
     object Notifications : Screen("notifications")
+    object VoiceAssistant : Screen("voice_assistant")
+    object AiCareerMentor : Screen("ai_career_mentor")
 
     // Detail screens
     object CourseDetail : Screen("course_detail/{courseId}") {
