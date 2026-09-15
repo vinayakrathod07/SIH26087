@@ -11,9 +11,11 @@ import androidx.room.RoomDatabase
         NotificationEntity::class,
         ProgrammeEntity::class,
         JobEntity::class,
-        SkillEntity::class
+        SkillEntity::class,
+        ModuleEntity::class,
+        LessonEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

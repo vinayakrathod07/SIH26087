@@ -88,6 +88,18 @@ dependencies {
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
+    // CameraX
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
+    // ML Kit
+    implementation(libs.mlkit.barcode.scanning)
+
+    // ZXing
+    implementation(libs.zxing.core)
+
     // Kotlinx Serialization
     implementation(libs.kotlinx.serialization.json)
 

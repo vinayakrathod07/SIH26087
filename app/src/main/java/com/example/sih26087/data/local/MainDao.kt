@@ -49,4 +49,16 @@ interface MainDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSkills(skills: List<SkillEntity>)
+
+    @Query("SELECT * FROM course_modules WHERE courseId = :courseId ORDER BY `order` ASC")
+    fun getModulesForCourse(courseId: String): Flow<List<ModuleEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertModules(modules: List<ModuleEntity>)
+
+    @Query("SELECT * FROM module_lessons WHERE moduleId = :moduleId")
+    fun getLessonsForModule(moduleId: String): Flow<List<LessonEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLessons(lessons: List<LessonEntity>)
 }

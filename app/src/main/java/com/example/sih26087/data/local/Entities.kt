@@ -32,7 +32,28 @@ data class CourseMetadataEntity(
     val description: String,
     val trainer: String,
     val progress: Int,
-    val category: String = "General"
+    val category: String = "General",
+    val enrollmentDate: Long = System.currentTimeMillis()
+)
+
+@Entity(tableName = "course_modules")
+data class ModuleEntity(
+    @PrimaryKey val id: String,
+    val courseId: String,
+    val title: String,
+    val order: Int,
+    val isCompleted: Boolean = false
+)
+
+@Entity(tableName = "module_lessons")
+data class LessonEntity(
+    @PrimaryKey val id: String,
+    val moduleId: String,
+    val title: String,
+    val contentType: String, // VIDEO, PDF, TEXT
+    val contentUrl: String,
+    val duration: String,
+    val isCompleted: Boolean = false
 )
 
 @Entity(tableName = "notifications")

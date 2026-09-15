@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.sih26087.data.model.UserRole
-import com.example.sih26087.data.local.TimetableEntity
 import com.example.sih26087.data.local.CourseMetadataEntity
+import com.example.sih26087.data.local.TimetableEntity
+import com.example.sih26087.data.model.UserRole
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,9 +65,16 @@ fun DashboardHubScreen(
                 tonalElevation = 8.dp
             ) {
                 val items = listOf("Home", "Learn", "Schedule", "Jobs", "Profile")
-                val icons = listOf(Icons.Default.Home, Icons.AutoMirrored.Filled.MenuBook, Icons.Default.DateRange, Icons.Default.Work, Icons.Default.Person)
                 
-                items.forEachIndexed { idx, item ->
+                items.forEach { item ->
+                    val icon = when(item) {
+                        "Home" -> Icons.Default.Home
+                        "Learn" -> Icons.AutoMirrored.Filled.MenuBook
+                        "Schedule" -> Icons.Default.DateRange
+                        "Jobs" -> Icons.Default.Work
+                        "Profile" -> Icons.Default.Person
+                        else -> Icons.Default.Home
+                    }
                     NavigationBarItem(
                         selected = activeTab == item,
                         onClick = { 
@@ -81,7 +88,7 @@ fun DashboardHubScreen(
                                 }
                             }
                         },
-                        icon = { Icon(icons[idx], contentDescription = item) },
+                        icon = { Icon(icon, contentDescription = item) },
                         label = { Text(item, fontSize = 11.sp) }
                     )
                 }
@@ -182,7 +189,7 @@ fun TraineeDashboardView(
                     Text("Mark Attendance", fontSize = 11.sp, overflow = TextOverflow.Ellipsis, maxLines = 1)
                 }
                 Button(
-                    onClick = { onNavigateToModule("settings_hub") },
+                    onClick = { onNavigateToModule("sync_hub") },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant, contentColor = MaterialTheme.colorScheme.onSurfaceVariant)
                 ) {
@@ -203,9 +210,9 @@ fun TraineeDashboardView(
                     if (timetable.isEmpty()) {
                         Text("No classes scheduled for today.", fontSize = 14.sp, color = Color.Gray)
                     } else {
-                        timetable.forEachIndexed { index, entry ->
+                        timetable.take(2).forEachIndexed { index, entry ->
                             TimetableRowItem(time = entry.time, subject = entry.subject, room = entry.room)
-                            if (index < timetable.size - 1) {
+                            if (index < timetable.size.coerceAtMost(2) - 1) {
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp), thickness = 0.5.dp, color = Color.LightGray)
                             }
                         }
@@ -289,6 +296,11 @@ fun AdminDashboardView(onNavigateToModule: (String) -> Unit) {
                     Text("System Integrity / Audit Logs", fontSize = 16.sp, fontWeight = FontWeight.Bold)
                     Text("• All security parameters matching central government guidelines.", fontSize = 13.sp, color = Color.Gray)
                 }
+            }
+        }
+        item {
+             Button(onClick = { onNavigateToModule("programme_management") }, modifier = Modifier.fillMaxWidth()) {
+                Text("Manage Programmes")
             }
         }
     }
