@@ -15,13 +15,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +31,6 @@ fun AiMentorScreen(
     val isTyping by viewModel.isTyping.collectAsState()
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
-    val scope = rememberCoroutineEffectScope()
 
     LaunchedEffect(chatHistory.size) {
         if (chatHistory.isNotEmpty()) {
@@ -171,6 +168,3 @@ fun ChatBubble(message: ChatMessage) {
         )
     }
 }
-
-@Composable
-private fun rememberCoroutineEffectScope() = rememberCoroutineScope()

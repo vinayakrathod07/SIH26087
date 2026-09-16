@@ -16,8 +16,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.sih26087.data.model.UserRole
-import com.example.sih26087.presentation.ai.AiMentorScreen
-import com.example.sih26087.presentation.ai.VoiceAssistantScreen
+import com.example.sih26087.presentation.ai.*
+import com.example.sih26087.presentation.analytics.AnalyticsScreen
 import com.example.sih26087.presentation.attendance.AttendanceViewModel
 import com.example.sih26087.presentation.attendance.QrScannerScreen
 import com.example.sih26087.presentation.auth.*
@@ -26,6 +26,7 @@ import com.example.sih26087.presentation.employment.JobDetailScreen
 import com.example.sih26087.presentation.lms.CourseDetailScreen
 import com.example.sih26087.presentation.lms.LessonScreen
 import com.example.sih26087.presentation.modules.*
+import com.example.sih26087.presentation.notifications.NotificationsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -194,12 +195,40 @@ fun SetupNavGraph(
             NotificationsScreen(onBack = { navController.popBackStack() })
         }
 
+        composable(Screen.SettingsHub.route) {
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
+
         composable(Screen.VoiceAssistant.route) {
             VoiceAssistantScreen(onBack = { navController.popBackStack() })
         }
 
         composable(Screen.AiCareerMentor.route) {
             AiMentorScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.DocumentAi.route) {
+            DocumentAiScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.ActivityAnalyzer.route) {
+            ActivityAnalyzerScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.Analytics.route) {
+            AnalyticsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable(Screen.HostelLogistics.route) {
+            HostelLogisticsScreen(onBack = { navController.popBackStack() })
         }
 
         composable(

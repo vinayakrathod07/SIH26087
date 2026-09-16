@@ -13,6 +13,7 @@ navigationCompose = "2.8.3"
 lifecycle = "2.8.6"
 hilt = "2.52"
 hiltNavigationCompose = "1.2.0"
+hiltWork = "1.2.0"
 room = "2.6.1"
 retrofit = "2.11.0"
 okhttp = "4.12.0"
@@ -50,6 +51,8 @@ androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lif
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hiltWork" }
+androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hiltWork" }
 
 # Room
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }

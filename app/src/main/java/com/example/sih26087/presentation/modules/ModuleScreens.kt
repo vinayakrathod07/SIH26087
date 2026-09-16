@@ -1,11 +1,14 @@
 package com.example.sih26087.presentation.modules
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
@@ -406,7 +409,9 @@ fun EmploymentExchangeScreen(
                 Text("Top recommendations based on your verified skills.", fontSize = 13.sp, color = Color.Gray)
             }
             items(jobs) { job ->
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth().clickable { onNavigateToJob(job.id) }
+                ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                             Text(job.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.weight(1f))
@@ -433,7 +438,7 @@ fun EmploymentExchangeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiCareerMentorScreen(onBack: () -> Unit) {
-    var chatHistory by remember { mutableStateOf(listOf(ChatMessage("AI Mentor", "Hello Ramesh, I have analyzed your skills, completed modules, and regional bank vacancies. How can I guide your cooperative career roadmap today?", false))) }
+    var chatHistory by remember { mutableStateOf(listOf(com.example.sih26087.presentation.ai.ChatMessage("ai_1", "AI Mentor", "Hello Ramesh, I have analyzed your skills, completed modules, and regional bank vacancies. How can I guide your cooperative career roadmap today?", false))) }
     var inputMessage by remember { mutableStateOf("") }
     
     Scaffold(
@@ -475,11 +480,11 @@ fun AiCareerMentorScreen(onBack: () -> Unit) {
                 FloatingActionButton(
                     onClick = {
                         if (inputMessage.isNotBlank()) {
-                            val userMsg = ChatMessage("You", inputMessage, true)
+                            val userMsg = com.example.sih26087.presentation.ai.ChatMessage(System.currentTimeMillis().toString(), "You", inputMessage, true)
                             val aiMsg = when {
-                                inputMessage.contains("job", ignoreCase = true) -> ChatMessage("AI Mentor", "Based on your SQL and Cooperative Management records, you are qualified for the PACS Society Executive opening in Dharwad district. Shall I help you draft an application?", false)
-                                inputMessage.contains("tomorrow", ignoreCase = true) -> ChatMessage("AI Mentor", "Tomorrow you have 'Cooperative Management Principles' at 10:00 AM in Room 3B. You also have an assignment due by 5:00 PM.", false)
-                                else -> ChatMessage("AI Mentor", "I am analyzing your profile... You currently have a 15% skill gap in 'Advanced Auditing'. I suggest starting Module 4 next week.", false)
+                                inputMessage.contains("job", ignoreCase = true) -> com.example.sih26087.presentation.ai.ChatMessage("ai_2", "AI Mentor", "Based on your SQL and Cooperative Management records, you are qualified for the PACS Society Executive opening in Dharwad district. Shall I help you draft an application?", false)
+                                inputMessage.contains("tomorrow", ignoreCase = true) -> com.example.sih26087.presentation.ai.ChatMessage("ai_3", "AI Mentor", "Tomorrow you have 'Cooperative Management Principles' at 10:00 AM in Room 3B. You also have an assignment due by 5:00 PM.", false)
+                                else -> com.example.sih26087.presentation.ai.ChatMessage("ai_4", "AI Mentor", "I am analyzing your profile... You currently have a 15% skill gap in 'Advanced Auditing'. I suggest starting Module 4 next week.", false)
                             }
                             chatHistory = chatHistory + userMsg + aiMsg
                             inputMessage = ""
@@ -496,8 +501,6 @@ fun AiCareerMentorScreen(onBack: () -> Unit) {
         }
     }
 }
-
-data class ChatMessage(val sender: String, val content: String, val isUser: Boolean)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -625,9 +628,9 @@ data class CertificateItem(val title: String, val issuer: String, val date: Stri
 @Composable
 fun NotificationsScreen(onBack: () -> Unit) {
     val notices = listOf(
-        NotificationData("Class Rescheduled", "Your morning session 'PACS Framework' is moved to 11:00 AM.", "10 mins ago"),
-        NotificationData("Certificate Issued", "Congratulations! Your 'Digital Literacy' certificate is now available.", "2 hours ago"),
-        NotificationData("New Job Match", "A new opening for 'Cooperative Executive' matches your skill profile.", "5 hours ago")
+        com.example.sih26087.presentation.notifications.NotificationData("Class Rescheduled", "Your morning session 'PACS Framework' is moved to 11:00 AM.", "10 mins ago"),
+        com.example.sih26087.presentation.notifications.NotificationData("Certificate Issued", "Congratulations! Your 'Digital Literacy' certificate is now available.", "2 hours ago"),
+        com.example.sih26087.presentation.notifications.NotificationData("New Job Match", "A new opening for 'Cooperative Executive' matches your skill profile.", "5 hours ago")
     )
     Scaffold(
         topBar = {
@@ -654,8 +657,6 @@ fun NotificationsScreen(onBack: () -> Unit) {
         }
     }
 }
-
-data class NotificationData(val title: String, val message: String, val time: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -691,6 +692,241 @@ fun AssessmentScreen(onBack: () -> Unit, courseId: String, assessmentId: String)
             Spacer(modifier = Modifier.weight(1f))
             Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp)) {
                 Text("Submit Answer")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onLogout: () -> Unit
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Settings & Privacy") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
+                }
+            )
+        }
+    ) { padding ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+            item {
+                SettingsCategoryHeader("General")
+                SettingsItem(Icons.Default.Language, "Language / भाषा", "English (India)")
+                SettingsItem(Icons.Default.Notifications, "Notification Preferences", "Enabled")
+                SettingsItem(Icons.Default.DarkMode, "Theme Mode", "Follow System")
+            }
+            item {
+                SettingsCategoryHeader("Account & Security")
+                SettingsItem(Icons.Default.Security, "Change Password", "")
+                SettingsItem(Icons.Default.PrivacyTip, "Data Privacy & AI Usage", "Review settings")
+                SettingsItem(Icons.Default.Devices, "Authorized Devices", "1 device connected")
+            }
+            item {
+                SettingsCategoryHeader("System")
+                SettingsItem(Icons.Default.CloudSync, "Sync Frequency", "Every 4 hours")
+                SettingsItem(Icons.Default.Storage, "Offline Content Storage", "1.2 GB used")
+                SettingsItem(Icons.Default.Info, "About Ecosystem App", "v1.0.42-gov")
+            }
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+                Button(
+                    onClick = onLogout,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Icon(Icons.Default.Logout, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Secure Logout")
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun SettingsCategoryHeader(title: String) {
+    Text(
+        text = title,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.padding(start = 16.dp, top = 24.dp, bottom = 8.dp)
+    )
+}
+
+@Composable
+fun SettingsItem(icon: ImageVector, title: String, subtitle: String) {
+    ListItem(
+        headlineContent = { Text(title, fontWeight = FontWeight.Medium) },
+        supportingContent = { if(subtitle.isNotEmpty()) Text(subtitle) },
+        leadingContent = { Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary) },
+        trailingContent = { Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.Gray) },
+        modifier = Modifier.clickable { }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HostelLogisticsScreen(onBack: () -> Unit) {
+    val items = listOf(
+        LogisticsItem("Hostel Allocation", "Room 402, Block B (Boys)", Icons.Default.Hotel),
+        LogisticsItem("Meal Timing", "Breakfast: 08:00 AM | Dinner: 08:00 PM", Icons.Default.Restaurant),
+        LogisticsItem("Transport", "Bus Route 12 - Institute Shuttle", Icons.Default.DirectionsBus),
+        LogisticsItem("Training Venue", "Conference Hall 2, Main Complex", Icons.Default.LocationOn)
+    )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Logistics & Hostel") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
+                }
+            )
+        }
+    ) { padding ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            items(items) { item ->
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(48.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape), contentAlignment = Alignment.Center) {
+                            Icon(item.icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(item.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(item.description, fontSize = 14.sp, color = Color.Gray)
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+data class LogisticsItem(val title: String, val description: String, val icon: ImageVector)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdminInstitutionManageScreen(onBack: () -> Unit) {
+    val institutions = listOf("NCTI Delhi", "RICM Bengaluru", "RTC Dharwad", "VAMNICOM Pune")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Manage Institutions") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
+                },
+                actions = {
+                    IconButton(onClick = {}) { Icon(Icons.Default.Add, contentDescription = "Add") }
+                }
+            )
+        }
+    ) { padding ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+            items(institutions) { inst ->
+                ListItem(
+                    headlineContent = { Text(inst) },
+                    supportingContent = { Text("Active Programmes: 12 | Trainees: 450") },
+                    leadingContent = { Icon(Icons.Default.AccountBalance, contentDescription = null) },
+                    trailingContent = { Icon(Icons.Default.MoreVert, contentDescription = null) }
+                )
+                HorizontalDivider()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AdminUserManageScreen(onBack: () -> Unit) {
+    val users = listOf("Amit Sharma (Admin)", "Rajesh Kumar (Trainer)", "Ramesh Kumar (Trainee)", "Sneha Patil (Trainer)")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("User Management") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
+                },
+                actions = {
+                    IconButton(onClick = {}) { Icon(Icons.Default.Search, contentDescription = "Search") }
+                }
+            )
+        }
+    ) { padding ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+            items(users) { user ->
+                ListItem(
+                    headlineContent = { Text(user) },
+                    supportingContent = { Text("Last login: Today, 10:45 AM") },
+                    leadingContent = { Icon(Icons.Default.Person, contentDescription = null) },
+                    trailingContent = { Switch(checked = true, onCheckedChange = {}) }
+                )
+                HorizontalDivider()
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecruiterJobCreateScreen(onBack: () -> Unit) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Create New Opening") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
+                }
+            )
+        }
+    ) { padding ->
+        Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).verticalScroll(rememberScrollState())) {
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Job Title") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Description") }, modifier = Modifier.fillMaxWidth(), minLines = 3)
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Required Skills") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Location") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(16.dp))
+            OutlinedTextField(value = "", onValueChange = {}, label = { Text("Salary Range") }, modifier = Modifier.fillMaxWidth())
+            Spacer(Modifier.height(32.dp))
+            Button(onClick = onBack, modifier = Modifier.fillMaxWidth().height(56.dp)) {
+                Text("Post Job Vacancy")
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RecruiterApplicantsScreen(onBack: () -> Unit) {
+    val applicants = listOf("Ramesh Kumar (95% Match)", "Suresh Singh (88% Match)", "Priyanka M. (82% Match)")
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Incoming Applications") },
+                navigationIcon = {
+                    IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null) }
+                }
+            )
+        }
+    ) { padding ->
+        LazyColumn(modifier = Modifier.fillMaxSize().padding(padding)) {
+            items(applicants) { applicant ->
+                ListItem(
+                    headlineContent = { Text(applicant) },
+                    supportingContent = { Text("Applied for: Cooperative Executive") },
+                    leadingContent = { Box(modifier = Modifier.size(40.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape), contentAlignment = Alignment.Center) { Text(applicant.take(1)) } },
+                    trailingContent = { Button(onClick = {}) { Text("Shortlist") } }
+                )
+                HorizontalDivider()
             }
         }
     }
